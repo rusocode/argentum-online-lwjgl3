@@ -28,8 +28,6 @@ import static org.aoclient.network.protocol.command.metadata.GameCommand.*;
  * de mantenimiento, control y gestion del mundo del juego, como expulsar jugadores, realizar modificaciones en los mapas, manejar
  * NPCs, habilitar o deshabilitar caracteristicas globales del juego, y mas.
  * </ul>
- * <p>
- * TODO Los nombres de los handlers tienen que coincidir con los nombres de los comandos
  */
 
 public final class CommandRegistry {

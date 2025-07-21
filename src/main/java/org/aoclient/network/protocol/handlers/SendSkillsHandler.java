@@ -20,7 +20,7 @@ public class SendSkillsHandler implements PacketHandler {
         /* TODO: este porcentajeSkills creo que es para mostrar algo en el form
             de estadìsticas
          */
-        int porcentajeSkills[] = new int[20];
+        int[] porcentajeSkills = new int[20];
 
         for (Skill skill : Skill.values()) {
             User.INSTANCE.setSkill(skill.getId(), buffer.readByte());

@@ -20,8 +20,6 @@ import org.aoclient.network.protocol.command.metadata.GameCommand;
  * comandos concretos.
  * <p>
  * Los argumentos que se indican entre "<>" son obligatorios y entre "[]" son opcionales.
- * <p>
- * TODO Mostrar mensaje para los comandos que no necesitan argumentos
  */
 
 public abstract class BaseCommandHandler implements CommandHandler {

@@ -18,8 +18,6 @@ import java.util.List;
  * <p>
  * Esta consola es fundamental para la comunicacion unidireccional del sistema hacia el jugador, mostrando eventos importantes,
  * resultados de acciones, mensajes del servidor y otros datos relevantes durante la experiencia de juego.
- * <p>
- * TODO Agregar italic y bold
  */
 
 public enum Console {
@@ -54,7 +52,7 @@ public enum Console {
                 if (lineaActual.length() + palabra.length() + 1 > MAX_CHARACTERS_LENGTH) {
                     // Si la palabra sola es muy larga, la cortamos igual
                     if (palabra.length() > MAX_CHARACTERS_LENGTH) {
-                        if (lineaActual.length() > 0) {
+                        if (!lineaActual.isEmpty()) {
                             resultado.append(lineaActual.toString().stripTrailing()).append("\n");
                             lineaActual.setLength(0);
                         }
@@ -74,9 +72,8 @@ public enum Console {
             }
 
             // Agregar lo que quedó en la línea
-            if (lineaActual.length() > 0) {
-                resultado.append(lineaActual.toString().stripTrailing()).append("\n");
-            }
+            if (!lineaActual.isEmpty()) resultado.append(lineaActual.toString().stripTrailing()).append("\n");
+
         }
 
         data.add(new ConsoleData(resultado.toString(), color));
