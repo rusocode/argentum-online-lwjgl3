@@ -9,6 +9,7 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.aoclient.engine.Window;
+import org.aoclient.engine.game.Messages;
 import org.aoclient.engine.game.models.City;
 import org.aoclient.engine.game.models.Role;
 import org.aoclient.engine.game.models.Direction;
@@ -25,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.aoclient.engine.audio.Sound.*;
+import static org.aoclient.engine.game.Messages.MessageKey.*;
 import static org.aoclient.engine.game.models.Character.*;
 import static org.aoclient.engine.renderer.Drawn.*;
 import static org.aoclient.engine.utils.GameData.*;
@@ -79,7 +81,7 @@ public final class FCreateCharacter extends Form {
     private final String[] role = new String[Role.values().length];
 
     private final ImInt currentItemGenero = new ImInt(0);
-    private final String[] strGenero = {"Hombre", "Mujer"};
+    private final String[] strGenero = new String[2];
     private RGBColor color;
     private RECT characterPos;
     // para el dibujado
@@ -94,6 +96,12 @@ public final class FCreateCharacter extends Form {
     private int inteligencia = 0;
     private int carisma = 0;
     private int constitucion = 0;
+
+    /**
+     * Al crear un pj tenemos una pequeña demora, ya que el cliente se conecta al servidor. Pero si el usuario
+     * empieza a mandar varias peticiones el buffer se rompe y no te termina logiando o logias y se te desconecta.
+     */
+    public static boolean sendCreate = false;
 
     public void setAtributos(int fuerza, int agilidad, int inteligencia, int carisma, int constitucion) {
         this.fuerza = fuerza;
@@ -150,14 +158,20 @@ public final class FCreateCharacter extends Form {
     private void loadComboBoxes() {
         // Esto hay que internacionalizarlo en algun momento, es puro hardcodeo.
         // Hogar
-        for (int i = 0; i < City.values().length; i++)
-            strCities[i] = City.values()[i].name();
+        for (int i = 0; i < City.values().length; i++) {
+            String name = City.values()[i].name().toLowerCase();
+            strCities[i] = name.substring(0, 1).toUpperCase() + name.substring(1);
+        }
+
         // Raza
         for (int i = 0; i < Race.values().length; i++)
-            strRazas[i] = Race.values()[i].name().replace("_", " "); // para quitar el "_" del enum
+            strRazas[i] = Race.values()[i].getName();
         // Clases
         for (int i = 0; i < Role.values().length; i++)
-            role[i] = Role.values()[i].name();
+            role[i] = Role.values()[i].getName();
+
+        strGenero[0] = Messages.get(GENDER_MALE);
+        strGenero[1] = Messages.get(GENDER_FEMININE);
     }
 
     @Override
@@ -466,16 +480,24 @@ public final class FCreateCharacter extends Form {
     }
 
     private void buttonCreateCharacter() {
+        if (sendCreate) return;
+
         final int userRaza = currentItemRaza.get() + 1;
         final int userSexo = currentItemGenero.get() + 1;
         final int userClase = currentItemClass.get() + 1;
         final int userHogar = currentItemHogar.get() + 1;
+
         if (!checkData()) return;
+
         new Thread(() -> {
             if (Connection.INSTANCE.connect())
                 loginNewChar(txtNombre.get(), txtPassword.get(), userRaza, userSexo, userClase, userHead, txtMail.get(), userHogar);
         }).start();
+
         USER.setUserName(txtNombre.get());
+
+        // listo basta no mandes mas peticiones al servidor.
+        sendCreate = true;
     }
 
     private void buttonThrowDices() {
@@ -565,28 +587,28 @@ public final class FCreateCharacter extends Form {
 
     private boolean checkData() {
         if (txtNombre.get().isEmpty() || txtPassword.get().isEmpty() || txtMail.get().isEmpty()) {
-            IM_GUI_SYSTEM.show(new FMessage("Por favor, rellene todos los campos."));
+            IM_GUI_SYSTEM.show(new FMessage(Messages.get(COMPLETE_ALL_FIELDS)));
             return false;
         }
 
         if (txtNombre.get().endsWith(" ")) {
-            IM_GUI_SYSTEM.show(new FMessage("Nombre invalido, se ha removido un espacio en blanco al final del nombre."));
+            IM_GUI_SYSTEM.show(new FMessage(Messages.get(INVALID_NICK)));
             txtNombre.set(txtNombre.get().substring(0, txtNombre.get().length() - 1));
             return false;
         }
 
         if (!txtPassword.get().equals(txtConfirmPassword.get())) {
-            IM_GUI_SYSTEM.show(new FMessage("Las contraseñas no son iguales. Recuerde que no se permite caracteres especiales."));
+            IM_GUI_SYSTEM.show(new FMessage(Messages.get(PASS_NOT_MATCH)));
             return false;
         }
 
         if (!checkEmail(txtMail.get())) {
-            IM_GUI_SYSTEM.show(new FMessage("Direccion de correo electronico invalido."));
+            IM_GUI_SYSTEM.show(new FMessage(Messages.get(INVALID_EMAIL)));
             return false;
         }
 
         if (checkSpecialChar(txtPassword.get()) || txtPassword.get().contains(" ")) {
-            IM_GUI_SYSTEM.show(new FMessage("Password invalido, no puede contener caracteres especiales ni espacios en blanco."));
+            IM_GUI_SYSTEM.show(new FMessage(Messages.get(INVALID_PASS)));
             return false;
         }
 

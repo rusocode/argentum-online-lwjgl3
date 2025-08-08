@@ -1,7 +1,9 @@
 package org.aoclient.network.protocol.handlers;
 
+import org.aoclient.engine.game.User;
+import org.aoclient.engine.gui.ImGUISystem;
+import org.aoclient.engine.gui.forms.FTrainer;
 import org.aoclient.network.PacketBuffer;
-import org.tinylog.Logger;
 
 public class TrainerCreatureListHandler implements PacketHandler {
 
@@ -12,17 +14,17 @@ public class TrainerCreatureListHandler implements PacketHandler {
         tempBuffer.copy(buffer);
         tempBuffer.readByte();
 
-        String creatures = tempBuffer.readCp1252String();
+        String creatureListString = tempBuffer.readCp1252String();
 
-        //creatures = Split(Buffer.ReadASCIIString(), SEPARATOR)
-        //
-        //    For i = 0 To UBound(creatures())
-        //        Call frmEntrenador.lstCriaturas.AddItem(creatures(i))
-        //    Next i
-        //    frmEntrenador.Show , //FrmMain
+        // Dividimos por el carácter nulo
+        String[] creatureList = creatureListString.split("\0");
+
+        User.INSTANCE.setUserBussy(true);
+
+        // Mostramos la lista en el GUI
+        ImGUISystem.INSTANCE.show(new FTrainer(creatureList));
 
         buffer.copy(tempBuffer);
-        Logger.debug("handleTrainerCreatureList Cargado! - FALTA TERMINAR!");
     }
 
 }

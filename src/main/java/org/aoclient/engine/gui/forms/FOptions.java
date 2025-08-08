@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import org.aoclient.engine.Window;
+import org.aoclient.engine.game.User;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +32,7 @@ public final class FOptions extends Form {
     public FOptions() {
         try {
             this.backgroundImage = loadTexture("VentanaOpciones");
+            User.INSTANCE.setUserBussy(true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

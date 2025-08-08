@@ -7,6 +7,7 @@ import imgui.type.ImString;
 import org.aoclient.engine.Engine;
 import org.aoclient.engine.Window;
 import org.aoclient.engine.game.Console;
+import org.aoclient.engine.game.User;
 import org.aoclient.engine.gui.widgets.ImageButton3State;
 import org.aoclient.network.protocol.Protocol;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 
 import static org.aoclient.engine.audio.Sound.SND_CLICK;
 import static org.aoclient.engine.audio.Sound.playSound;
+import static org.aoclient.engine.gui.forms.FCreateCharacter.sendCreate;
 import static org.aoclient.engine.utils.Time.FPS;
 
 /**
@@ -57,6 +59,7 @@ public final class FMain extends Form {
     private ImageButton3State btnGuild;
 
     public FMain() {
+        sendCreate = false; // una vez logiado resetiamos esto para que se pueda volver a crear pj.
         this.viewInventory = true;
         USER.getUserInventory().setVisible(true);
 
@@ -251,7 +254,7 @@ public final class FMain extends Form {
         /*-=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=-
                        INVENTORY AND SPELLS BUTTONS
         -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=-*/
-        drawButton(710, 417, 17, 17, "Tirar Oro");
+
         if (drawButton(592, 128, 93, 30, "ViewInvetory")) {
             playSound(SND_CLICK);
             USER.getUserInventory().setVisible(true);
@@ -262,11 +265,16 @@ public final class FMain extends Form {
             USER.getUserInventory().setVisible(false);
             this.viewInventory = false;
         }
-        if (ImGui.beginPopupContextItem("Tirar Oro")) {
-            playSound(SND_CLICK);
-            IM_GUI_SYSTEM.show(new FCantidad(true));
-            ImGui.endPopup();
+
+        if (!User.INSTANCE.isUserBussy()) {
+            drawButton(710, 417, 17, 17, "Tirar Oro");
+            if (ImGui.beginPopupContextItem("Tirar Oro")) {
+                playSound(SND_CLICK);
+                IM_GUI_SYSTEM.show(new FCantidad(true));
+                ImGui.endPopup();
+            }
         }
+
         /*-=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=-
                                 CHAT BUTTONS
         -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=-*/

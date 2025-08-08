@@ -9,20 +9,20 @@ import org.aoclient.network.protocol.Protocol;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
 
-public final class FSpawnList extends Form {
+public final class FTrainer extends Form {
 
     private String[] CreatureList;
     private ImInt selectedIndex = new ImInt(0);
 
-    public FSpawnList(String[] creatureList) {
+    public FTrainer(String[] creatureList) {
         super();
         this.CreatureList = creatureList;
     }
 
     @Override
     public void render() {
-        ImGui.setNextWindowSize(220, 250, ImGuiCond.Always);
-        ImGui.begin(this.getClass().getSimpleName(),ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize);
+        ImGui.setNextWindowSize(281, 245, ImGuiCond.Always);
+        ImGui.begin(this.getClass().getSimpleName(), ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize);
 
         ImGui.setCursorPos(5, 0);
 
@@ -55,11 +55,12 @@ public final class FSpawnList extends Form {
         }
         
         if (ImGui.button("Invocar", ImGui.getWindowWidth() - 16, 20) || ImGui.isKeyPressed(GLFW_KEY_ENTER)) {
-            Protocol.spawnCreature((short) (selectedIndex.get() + 1));
+            Protocol.train( selectedIndex.get() + 1);
         }
         if (ImGui.button("Salir", ImGui.getWindowWidth() - 16, 20) || ImGui.isKeyPressed(GLFW_KEY_ENTER)) {
             close();
         }
+
     }
 
 }
